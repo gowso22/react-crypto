@@ -7,10 +7,10 @@ function Router(){
         <BrowserRouter>
             <Routes>
                 
-                <Route path="/react-crypto/:coinId" element = {<Coin/>}>  
+                <Route  path={`${process.env.PUBLIC_URL}/:coinId`} element = {<Coin/>}>  
                 </Route>
 
-                <Route path="/react-crypto" element = {<Coins/>}>  
+                <Route  path={`${process.env.PUBLIC_URL}/`} element = {<Coins/>}>  
                 </Route>
             </Routes>
         </BrowserRouter>
