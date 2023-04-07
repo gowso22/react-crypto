@@ -10,9 +10,12 @@
     "@types/node": "^16.18.23",
     "@types/react": "^18.0.33",
     "@types/react-dom": "^18.0.11",
+    "apexcharts": "^3.37.3",
     "gh-pages": "^5.0.0",
     "react": "^18.2.0",
+    "react-apexcharts": "^1.4.0",
     "react-dom": "^18.2.0",
+    "react-helmet": "^6.1.0",
     "react-query": "^3.39.3",
     "react-router-dom": "^6.10.0",
     "react-scripts": "5.0.1",
@@ -47,6 +50,7 @@
     ]
   },
   "devDependencies": {
+    "@types/react-helmet": "^6.1.6",
     "@types/styled-components": "^5.1.26"
   },
   "homepage": "https://gowso22.github.io/react-crypto"

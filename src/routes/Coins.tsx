@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
+import { useQuery } from "react-query";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import { fetchCoins } from "../api";
+import { Helmet } from "react-helmet";
 
 // 스타일 컴포넌트
 const Container = styled.div`
@@ -50,7 +53,7 @@ const Img = styled.img`
 `;
 
 // 코인리스트 인터페이스 설정(코인리스트 타입)
-interface CoinInterface {
+interface ICoin {
     id: string,
     name: string,
     symbol: string,
@@ -59,35 +62,33 @@ interface CoinInterface {
     is_active: boolean,
     type: string,
 }
-
+// useQuery >> 한 번 불러온 데이터를 캐시에 저장해두기 때문에 다른 화면 이동한 후 돌아와도
+//             다시 로딩화면을 띄우지 않음
 function Coins(){
-    // 가져온 코인api 데이터를 담을 coin 배열
-    const [coins, setCoins] = useState<CoinInterface[]>([]);
-    // api 로딩 여부 확인
-    const [loading, setLoading] = useState(true);
+    // useQuery(1,2) 
+    // 1 >> query의 고유식별자(key값)
+    // 2 >> fetch 함수 : api.ts의 fetchCoins
+    // 3 >> refetchinterval : 데이터를 주기적으로 리패치함
 
-    useEffect(()=>{
+    // useQuery 반환값
+    // isLoading(boolean) : fetch 함수(fetchCoins)의 데이터를 가져오는 동안 로딩 여부
+    // data(any) : fetch 함수 통해 가져온 json 데이터를 받음
 
-       (async() => {
-        const res = await fetch("https://api.coinpaprika.com/v1/coins");
-        const json = await res.json();
-
-        // 가져온 데이터를  100개까지만 받음
-        setCoins(json.slice(0, 100));
-        // 데이터를 다 받았으면 loading 해제
-        setLoading(false);
-       })(); 
-    }, [])
+    // data의 타입은 any이므로 ICoin을 통해 data의 타입설정
+    const {isLoading, data} = useQuery<ICoin[]>("allCoins", fetchCoins)
 
     return (
       <Container>
+        <Helmet>
+            <title>COIN LIST</title>
+        </Helmet>
       <Header>
         <Title>Coin List</Title>
       </Header>
-      { loading ? <Loader>loading...</Loader> 
+      { isLoading ? <Loader>loading...</Loader> 
       : 
       (<CoinsList>
-        {coins.map((coin) => (
+        {data?.slice(0,100).map((coin) => (
           <Coin key={coin.id}>
             {/* 
               to > 지정하는 화면으로 이동할 경로값

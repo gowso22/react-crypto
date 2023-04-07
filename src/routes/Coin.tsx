@@ -1,11 +1,17 @@
-import { useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { Helmet } from 'react-helmet';
+import { useQuery } from "react-query";
+import { Link, Outlet, useLocation, useMatch, useParams } from "react-router-dom";
 import styled from "styled-components";
+import { fetchCoinInfo, fetchCoinTickers } from "../api";
+
 
 
 const Title = styled.h1`
   font-size: 48px;
   color: ${(props) => props.theme.accentColor};
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 const Loader = styled.span`
   text-align: center;
@@ -22,6 +28,58 @@ const Header = styled.header`
   justify-content: center;
   align-items: center;
 `;
+const Overview = styled.div`
+  display: flex;
+  justify-content: space-between;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 10px 20px;
+  border-radius: 10px;
+`;
+const OverviewItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  span:first-child {
+    font-size: 10px;
+    font-weight: 400;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+`;
+const Description = styled.p`
+  margin: 20px 0px;
+`;
+const Tabs = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  margin: 10px 0px;
+  gap: 10px;
+`;
+
+const Tab = styled.span<{isActive: boolean}>`
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 400;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 5px 0px;
+  border-radius: 10px;
+  
+  a {
+    display: block;
+    color: ${(props) =>
+    props.isActive ? props.theme.accentColor : props.theme.textColor};
+  }
+`;
+const Logo = styled.img`
+  width: 50px;
+  height: 50px;
+  margin-right: 15px;
+`;
+
+
+
+
 
 // https://api.coinpaprika.com/v1/coins/${coinId}에서 받아온
 // 데이터 타입 설정(info의 타입)
@@ -86,42 +144,83 @@ interface InfoData {
 
 
 
-
 function Coin(){
     const {coinId} = useParams();
-    const [loading, setLoading] = useState(true);
     const {state} = useLocation();
+    const priceMatch = useMatch(`${process.env.PUBLIC_URL}/${coinId}/price`); 
+    const chartMatch = useMatch(`${process.env.PUBLIC_URL}/${coinId}/chart`);   
+    // fetchCoinInfo(coinId!) 
+    // !=> 확장 할당 어션셜로 값이 무조건 할당되어있다고 컴파일러에게 전달해 값이 없어도 변수를 사용할 수 있게 한다고 합니다.
 
-    // 객체를 받는 info, priceinfo state 데이터를 생성
-    const [info, setInfo] = useState<InfoData>();
-    const [priceInfo, setPriceInfo] = useState<PriceData>();
-
-    useEffect(() => {
-        (async () => {
-          const infoData = await (
-            await fetch(`https://api.coinpaprika.com/v1/coins/${coinId}`)
-          ).json();
-          const priceData = await (
-            await fetch(`https://api.coinpaprika.com/v1/tickers/${coinId}`)
-          ).json();
-          
-          setInfo(infoData);
-          setPriceInfo(priceData);
-          setLoading(false);  
-        })();
-      }, []);
-
-
-
-
+    const {isLoading: infoLoading, data : infoData} 
+    = useQuery<InfoData>(["info", coinId], () => fetchCoinInfo(coinId));
+    const {isLoading: tickersLoading, data : tickersData} 
+    = useQuery<PriceData>([
+    "tickers", coinId], 
+    () => fetchCoinTickers(coinId),
+    {
+      refetchInterval : 3000,
+    }
+    );
+    
+   
+    const loading = infoLoading || tickersLoading;
     return (
         <Container>
+          <Helmet>
+            <title> {state?.name ? state.name : loading ? "Loading..." : infoData?.name}</title>
+          </Helmet>
         <Header>
         {/* state가 존재하면 name을 가져오고 아니면 Loading문구를 보여줌*/}
-          <Title>{state?.name || "Loading.."}</Title>
+        <Link to ={`${process.env.PUBLIC_URL}/`}>
+          
+          <Title>
+          <Logo src={`https://static.coinpaprika.com/coin/${coinId}/logo.png`}/>
+            {state?.name ? state.name : loading ? "Loading..." : infoData?.name}
+          </Title>
+        </Link>
         </Header>
         {loading ? <Loader>Loading...</Loader> 
-        : priceInfo?.quotes.USD.price}
+        : 
+        <>
+        <Overview>
+            <OverviewItem>
+              <span>Rank:</span>
+              <span>{infoData?.rank}</span>
+            </OverviewItem>
+            <OverviewItem>
+              <span>통화 단위:</span>
+              <span>${infoData?.symbol}</span>
+            </OverviewItem>
+            <OverviewItem>
+              <span>가격:</span>
+              <span>{tickersData?.quotes.USD.price}</span>
+            </OverviewItem>
+          </Overview>
+          <Description>{infoData?.description}</Description>
+          <Overview>
+            <OverviewItem>
+              <span>총 공급량:</span>
+              <span>{tickersData?.total_supply}</span>
+            </OverviewItem>
+            <OverviewItem>
+              <span>최대 공급량:</span>
+              <span>{tickersData?.max_supply}</span>
+            </OverviewItem>
+          </Overview>
+          
+
+          <Tabs>
+            <Tab isActive={priceMatch !== null}>
+              <Link to ={`${process.env.PUBLIC_URL}/${coinId}/price`}>Price</Link>
+            </Tab>
+            <Tab isActive={chartMatch !== null}> 
+              <Link to = {`${process.env.PUBLIC_URL}/${coinId}/chart`}>Chart</Link>
+            </Tab>
+          </Tabs>
+          <Outlet context={{coinId}}/>
+        </>
+        }
       </Container>
     )
 }
