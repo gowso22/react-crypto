@@ -4,7 +4,12 @@ import { fetchCoinHistory } from "../api";
 import ApexChart from "react-apexcharts";
 import { useRecoilValue } from "recoil";
 import { isDarkAtom } from "../atoms";
+import styled from "styled-components";
 
+const Loader = styled.span`
+  text-align: center;
+  display: block;
+`;
 
 interface ICoinId{
   coinId: string;
@@ -31,7 +36,7 @@ function Chart() {
     <div>
       {
         isLoading 
-      ? ("Loading... chart...") 
+      ? (<Loader>차트를 불러오는 중 입니다...</Loader>) 
       : (
         <ApexChart
   type="candlestick"

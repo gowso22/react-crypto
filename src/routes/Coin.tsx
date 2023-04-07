@@ -21,6 +21,7 @@ const Container = styled.div`
   padding: 0px 20px;
   max-width: 480px;
   margin: 0 auto;
+  font-weight: normal;
 `;
 const Header = styled.header`
   height: 15vh;
@@ -162,8 +163,7 @@ function Coin(){
     () => fetchCoinTickers(coinId),
     {
       refetchInterval : 3000,
-    }
-    );
+    });
     
    
     const loading = infoLoading || tickersLoading;
@@ -196,18 +196,18 @@ function Coin(){
             </OverviewItem>
             <OverviewItem>
               <span>가격:</span>
-              <span>${tickersData?.quotes.USD.price.toFixed(3)}</span>
+              <span>${Number(tickersData?.quotes.USD.price.toFixed(3)).toLocaleString()}</span>
             </OverviewItem>
           </Overview>
           <Description>{infoData?.description}</Description>
           <Overview>
             <OverviewItem>
               <span>총 공급량:</span>
-              <span>{tickersData?.total_supply}</span>
+              <span>{Number(tickersData?.total_supply).toLocaleString()}</span>
             </OverviewItem>
             <OverviewItem>
               <span>최대 공급량:</span>
-              <span>{tickersData?.max_supply}</span>
+              <span>{Number(tickersData?.max_supply).toLocaleString()}</span>
             </OverviewItem>
           </Overview>
           
