@@ -2,6 +2,8 @@ import { useQuery } from "react-query";
 import { useOutletContext } from "react-router-dom"; 
 import { fetchCoinHistory } from "../api";
 import ApexChart from "react-apexcharts";
+import { useRecoilValue } from "recoil";
+import { isDarkAtom } from "../atoms";
 
 
 interface ICoinId{
@@ -23,67 +25,60 @@ function Chart() {
   const {coinId} = useOutletContext<ICoinId>();
   const {isLoading, data} = useQuery<ICoinHis[]>(["ohlcv", coinId], () => fetchCoinHistory(coinId));
   
+  const isDark = useRecoilValue(isDarkAtom)
  
   return (
     <div>
-      {isLoading 
+      {
+        isLoading 
       ? ("Loading... chart...") 
       : (
-      <ApexChart 
-        type="line"
-        series={[
-        {
-          name : "Price",
-          // data가 null이나 undefined인 경우 빈 배열[]을 할당
-          data: data?.map((price) => parseFloat(price.close)) ?? [],
-        }
-        ]} 
-        options={{
-          theme : {
-            mode : "dark",
-          },
-          chart: {
-            height: 300,
-            width: 500,
-            // 툴바 x
-            toolbar: {
-              show: false,
-            },
-            background: "transparent",
-          },
-          grid: { show: false },
-          stroke: {
-            curve: "smooth",
-            width: 3,
-          },
-          // y축 값 x
-          yaxis: {
-            show: false,
-          },
-           // x축 값 x
-          xaxis: {
-            categories: data?.map(price => new Date(price.time_close*1000).toISOString()),
-            type: "datetime",
-            axisBorder: { show: false },// x축 라인
-            axisTicks: { show: false }, // x축 칸을 나타내는 선
-            labels: { show: false },
-          },
-          fill: {
-            type: "gradient",
-            gradient: { 
-            gradientToColors: ["#0be881"], 
-            stops: [0, 100] }, // 0왼쪽끝,100오른쪽끝
-          },
-          colors: ["#0fbcf9"],
-          tooltip:{
-            y : {
-              // toFixed(소수점 자리수)
-              formatter : (value) => `$${value.toFixed(0)}`,
-            }
-          }
-        }}
-        />
-        )}
+        <ApexChart
+  type="candlestick"
+  series={[
+    {
+      data: data?.map(price => ({
+        x:  new Date(price.time_close*1000).toISOString(),
+        y: [parseFloat(price.open), parseFloat(price.high), parseFloat(price.low), parseFloat(price.close)],
+      })) ?? [],
+    },
+  ]}
+  options={{
+    theme: {
+      mode : isDark ? "dark" : "light",
+    },
+    chart: {
+      height: 300,
+      width: 500,
+      toolbar :{
+        show : false,
+      },
+      background: "transparent",
+    },
+    grid: {
+      show: true,
+    },
+
+    xaxis: {
+      categories: data?.map(price => price.time_close),
+      type: "datetime",
+      axisBorder: { show: false },
+      axisTicks: { show: false }, 
+      labels: { show: false },
+    },
+    yaxis: {
+      show: true,
+    },
+    
+    tooltip: {
+      y: {
+        formatter: value => `$ ${value.toFixed(1)}`,
+      },
+    },
+  }}
+/>
+        )
+      }
     </div>   
     )
   }

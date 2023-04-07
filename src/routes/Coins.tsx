@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { fetchCoins } from "../api";
 import { Helmet } from "react-helmet";
+import {useSetRecoilState, useRecoilValue} from 'recoil'
+import { isDarkAtom } from "../atoms";
 
 // 스타일 컴포넌트
 const Container = styled.div`
@@ -14,6 +15,7 @@ const Container = styled.div`
 const Header = styled.header`
   height: 15vh;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 `;
@@ -21,17 +23,24 @@ const Title = styled.h1`
     font-size : 48px;
     color: ${(props) => props.theme.accentColor};
 `;
+const ThemeBtn = styled.button`
+  margin-top: 15px;
+  background-color: ${(props) => props.theme.accentColor};
+  border : 1px solid ${(props) => props.theme.bgColor};
+  color : ${(props) => props.theme.bgColor};
+  border-radius: 10px;
+`;
 const CoinsList = styled.ul``;
 
 const Coin = styled.li`
-  background-color: white;
-  color: ${(props) => props.theme.bgColor};
+  background-color: ${(props) => props.theme.cardBgColor};
+  border : 1px solid ${(props) => props.theme.textColor};
   border-radius: 15px;
   margin-bottom: 10px;
   a {
     padding: 20px;
     transition: color 0.2s ease-in;
-
+    color: ${(props) => props.theme.textColor};
     // 옆 아이콘에 맞게 가운데로 맞춰줌
     display: flex;
     align-items : center;
@@ -51,6 +60,9 @@ const Img = styled.img`
   height: 30px;
   margin-right: 10px;
 `;
+
+
+
 
 // 코인리스트 인터페이스 설정(코인리스트 타입)
 interface ICoin {
@@ -77,6 +89,13 @@ function Coins(){
     // data의 타입은 any이므로 ICoin을 통해 data의 타입설정
     const {isLoading, data} = useQuery<ICoin[]>("allCoins", fetchCoins)
 
+    const  setDarkAtom = useSetRecoilState(isDarkAtom);
+    const isDark = useRecoilValue(isDarkAtom)
+
+    const toggleTheme = () => {
+      setDarkAtom((prev) => !prev);
+    }
+
     return (
       <Container>
         <Helmet>
@@ -84,6 +103,7 @@ function Coins(){
         </Helmet>
       <Header>
         <Title>Coin List</Title>
+        <ThemeBtn onClick={toggleTheme}>{isDark ?  "Light" : "Dark"}</ThemeBtn>
       </Header>
       { isLoading ? <Loader>loading...</Loader> 
       : 

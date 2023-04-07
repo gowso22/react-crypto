@@ -3,6 +3,10 @@ import Router from './routes/Router';
 import { createGlobalStyle } from 'styled-components';
 // devtools >> 캐시에 있는 query를 볼 수 있음
 import {ReactQueryDevtools} from 'react-query/devtools'
+import { ThemeProvider } from 'styled-components';
+import { lightTheme, darkTheme } from './Theme';
+import {useRecoilValue} from 'recoil'
+import { isDarkAtom } from './atoms';
 
 const GlobalStyle = createGlobalStyle`
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400&display=swap');
@@ -70,12 +74,19 @@ a {
 
 
 function App() {
+  // recoil 사용, 
+  // useRecoilValue : state값을 읽을 수만 있게 하고 싶을 때에 추천하는 hook
+  // useSetRecoilState : Recoil state의 값을 업데이트하기 위한 setter 함수를 반환합니다.
+  //                     상태를 변경하기 위해 비동기로 사용될 수 있는 setter 함수를 리턴합니다.
+  const isDark = useRecoilValue(isDarkAtom)
+
   return (
     <>
-    <GlobalStyle/>
-    <Router/>
-    <ReactQueryDevtools initialIsOpen={true}/> 
-    
+    <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
+      <GlobalStyle/>
+      <Router/>
+      <ReactQueryDevtools initialIsOpen={true}/> 
+    </ThemeProvider>
     </>
   );
 }
