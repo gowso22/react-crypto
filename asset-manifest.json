@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.js": "/react-crypto/static/js/main.f9179e0f.js",
+    "main.js": "/react-crypto/static/js/main.60b8f5cf.js",
     "index.html": "/react-crypto/index.html",
-    "main.f9179e0f.js.map": "/react-crypto/static/js/main.f9179e0f.js.map"
+    "main.60b8f5cf.js.map": "/react-crypto/static/js/main.60b8f5cf.js.map"
   },
   "entrypoints": [
-    "static/js/main.f9179e0f.js"
+    "static/js/main.60b8f5cf.js"
   ]
 }
