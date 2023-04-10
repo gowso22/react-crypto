@@ -119,7 +119,7 @@ function Price() {
         <TickerTabs>
           <Tab>
             <span>역대 고가</span>
-            <span>${Number(tickersData?.quotes.USD.ath_price.toFixed(0)).toLocaleString()} </span>
+            <span>${Number(tickersData?.quotes.USD.ath_price.toFixed(5)).toLocaleString()} </span>
           </Tab>
           <Tab>
             <span>거래량(24H)</span>
