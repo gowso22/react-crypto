@@ -7,8 +7,6 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 npm start 실행하여
 [http://localhost:3000/react-crypto](http://localhost:3000/react-crypto) 브라우저 열어 확인 가능합니다. 
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
 
 ### `npm run build`
 
