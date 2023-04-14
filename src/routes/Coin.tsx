@@ -51,14 +51,23 @@ const OverviewItem = styled.div`
 const Description = styled.p`
   margin: 20px 0px;
 `;
-const Tabs = styled.div`
+const ChartTabs = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   margin: 10px 0px;
   gap: 10px;
 `;
+const PriceTabs = styled.div`
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px 0px;
+  gap: 10px;
+`;
 
 const Tab = styled.span<{isActive: boolean}>`
+  width: 100%;
   text-align: center;
   text-transform: uppercase;
   font-size: 12px;
@@ -151,7 +160,8 @@ function Coin(){
     const {coinId} = useParams();
     const {state} = useLocation();
     const priceMatch = useMatch(`${process.env.PUBLIC_URL}/${coinId}/price`); 
-    const chartMatch = useMatch(`${process.env.PUBLIC_URL}/${coinId}/chart`);   
+    const candletMatch = useMatch(`${process.env.PUBLIC_URL}/${coinId}/candlechart`);
+    const areaMatch = useMatch(`${process.env.PUBLIC_URL}/${coinId}/areachart`);   
     // fetchCoinInfo(coinId!) 
     // !=> 확장 할당 어션셜로 값이 무조건 할당되어있다고 컴파일러에게 전달해 값이 없어도 변수를 사용할 수 있게 한다고 합니다.
 
@@ -211,15 +221,19 @@ function Coin(){
             </OverviewItem>
           </Overview>
           
-
-          <Tabs>
-            <Tab isActive={priceMatch !== null}>
-              <Link to ={`${process.env.PUBLIC_URL}/${coinId}/price`}>Price</Link>
+          <PriceTabs>
+          <Tab isActive={priceMatch !== null}>
+              <Link to ={`${process.env.PUBLIC_URL}/${coinId}/price`}>가격 정보</Link>
             </Tab>
-            <Tab isActive={chartMatch !== null}> 
-              <Link to = {`${process.env.PUBLIC_URL}/${coinId}/chart`}>Chart</Link>
+          </PriceTabs>
+          <ChartTabs>
+          <Tab isActive={areaMatch !== null}>
+              <Link to ={`${process.env.PUBLIC_URL}/${coinId}/areachart`}>영역 차트</Link>
             </Tab>
-          </Tabs>
+            <Tab isActive={candletMatch !== null}> 
+              <Link to = {`${process.env.PUBLIC_URL}/${coinId}/candlechart`}>촛대형 차트</Link>
+            </Tab>
+          </ChartTabs>
           <Outlet context={{coinId}}/>
         </>
         }

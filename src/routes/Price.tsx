@@ -2,6 +2,7 @@ import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import { fetchCoinHistory, fetchCoinTickers } from "../api";
+import {motion} from 'framer-motion';
 
 
 const Container = styled.div`
@@ -10,19 +11,19 @@ const Container = styled.div`
   margin: 0 auto;
   font-weight: normal;
 `;
-const DevTabs = styled.div`
+const DevTabs = styled(motion.div)`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   margin: 10px 0px;
   gap: 10px;
 `;
-const TickerTabs = styled.div`
+const TickerTabs = styled(motion.div)`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   margin: 10px 0px;
   gap: 10px;
 `;
-const Tab = styled.span`
+const Tab = styled(motion.span)`
   display: flex;
   flex-direction: column;
   text-align: center;
@@ -38,6 +39,33 @@ const Loader = styled.span`
   display: block;
 `;
 
+const tabsVars = {
+  start : {
+    opacity : 0,
+    scale : 0.5
+  },
+  end : {
+    opacity : 1,
+    scale : 1,
+    transition : {
+      type : "spring",
+      duration : 2,
+      bounce : 0,
+    }
+  }
+}
+
+
+const tabVars = {
+  start : {
+    opacity : 0,
+    y : 10,
+  },
+  end : {
+    opacity : 1,
+    y : 0,
+  },
+}
 
 interface PriceData {
   id: string;
@@ -96,40 +124,40 @@ function Price() {
       <Container>
         {loading ? <Loader>가격 정보를 불러오는 중입니다.</Loader> : (
           <>
-          <DevTabs>
-          <Tab>
+          <DevTabs variants={tabsVars} initial = "start" animate = "end">
+          <Tab variants={tabVars} initial = "start" animate = "end">
             <span>시가</span>
             <span>${devData?.slice(20).map((data)=>(
-              data.open
+               Number(data.open).toLocaleString()
               ))}</span>
           </Tab>
-          <Tab>
+          <Tab variants={tabVars} initial = "start" animate = "end">
             <span>고가</span>
             <span>${devData?.slice(20).map((data)=>(
-              data.high
+               Number(data.high).toLocaleString()
               ))}</span>
           </Tab>
-          <Tab>
+          <Tab variants={tabVars} initial = "start" animate = "end">
             <span>저가</span>
             <span>${devData?.slice(20).map((data)=>(
-              data.low
+              Number(data.low).toLocaleString()
               ))}</span>
           </Tab>
         </DevTabs>
-        <TickerTabs>
-          <Tab>
+        <TickerTabs variants={tabsVars} initial = "start" animate = "end">
+          <Tab variants={tabVars} initial = "start" animate = "end">
             <span>역대 고가</span>
             <span>${Number(tickersData?.quotes.USD.ath_price.toFixed(5)).toLocaleString()} </span>
           </Tab>
-          <Tab>
+          <Tab variants={tabVars} initial = "start" animate = "end">
             <span>거래량(24H)</span>
             <span>{Number(tickersData?.quotes.USD.volume_24h.toFixed(0)).toLocaleString()} </span>
           </Tab>
-          <Tab>
+          <Tab variants={tabVars} initial = "start" animate = "end">
             <span>변동(24H)</span>
             <span>{tickersData?.quotes.USD.percent_change_24h}%</span>
           </Tab>
-          <Tab>
+          <Tab variants={tabVars} initial = "start" animate = "end">
             <span>변동(7D)</span>
             <span>{tickersData?.quotes.USD.percent_change_7d}%</span>
           </Tab>

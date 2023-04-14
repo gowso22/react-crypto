@@ -26,7 +26,7 @@ interface ICoinHis{
     market_cap: number
 }
 
-function Chart() {
+function CandleChart() {
   const {coinId} = useOutletContext<ICoinId>();
   const {isLoading, data} = useQuery<ICoinHis[]>(["ohlcv", coinId], () => fetchCoinHistory(coinId));
   
@@ -77,7 +77,7 @@ function Chart() {
     
     tooltip: {
       y: {
-        formatter: value => `$ ${value.toFixed(1)}`,
+        formatter: value => `$ ${Number(value.toFixed(0)).toLocaleString()}`,
       },
     },
   }}
@@ -88,4 +88,4 @@ function Chart() {
     )
   }
   
-  export default Chart;
+  export default CandleChart;
